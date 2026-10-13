@@ -1,0 +1,26 @@
+# Decor Construction Chemicals
+
+> Product information for Decor Construction Chemicals, a construction chemicals catalogue. The site provides product descriptions and pack details and accepts order inquiries through WhatsApp.
+
+## Pages
+
+- [Home and house-area recommendations](https://molvisahab.github.io/decor-website/)
+- [Product catalogue](https://molvisahab.github.io/decor-website/products.html)
+
+## Products
+
+- [Decor Proof 700](https://molvisahab.github.io/decor-website/products/proof-700.html): Integral waterproofing powder.
+- [Decor SBR Latex 775](https://molvisahab.github.io/decor-website/products/sbr-latex-775.html): Bonding agent and admixture.
+- [Decor Seal 777](https://molvisahab.github.io/decor-website/products/seal-777.html): Two-component waterproofing kit.
+- [Decor WP 781](https://molvisahab.github.io/decor-website/products/wp-781.html): Flexible waterproofing coating.
+- [Decor PU Sealant](https://molvisahab.github.io/decor-website/products/pu-sealant.html): Polyurethane joint sealant.
+- [Decor Termi Fix](https://molvisahab.github.io/decor-website/products/termi-fix.html): Anti-termite treatment.
+
+## Contact
+
+- WhatsApp and phone: +92 324 8260053
+- Email: decorchemicals@gmail.com
+- Instagram: https://www.instagram.com/decorchemicals
+- Facebook: https://www.facebook.com/share/192ZX5S4V6/?mibextid=wwXIfr
+
+Pack availability, prices, endorsements, certifications, and physical location are not stated here. Contact the business for current order details.

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://molvisahab.github.io/decor-website/sitemap.xml

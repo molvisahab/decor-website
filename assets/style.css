@@ -93,11 +93,10 @@ p { margin: 0; }
 .site-header { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: var(--paper); border-bottom: 1px solid var(--line); }
 .bar { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 68px; }
 .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; color: var(--red-text); }
-.brand-mark { width: 40px; height: auto; }
-.mark-white { display: none; }
+.brand-mark { width: 44px; height: auto; flex: none; }
 .brand-text { display: flex; flex-direction: column; line-height: 1; font-family: var(--f-display); }
 .brand-text strong { font-size: 1.6rem; font-weight: 800; letter-spacing: .02em; }
-.brand-text sup { font-size: .5em; }
+.brand-text sup { font: .5em Arial, sans-serif; }
 .brand-text span { font-size: .86rem; font-weight: 700; color: var(--ink); letter-spacing: .03em; }
 .site-nav { display: flex; align-items: center; gap: 26px; }
 .site-nav a:not(.btn) { text-decoration: none; font-weight: 600; font-size: .98rem; padding: 6px 0; border-bottom: 2px solid transparent; }
@@ -112,8 +111,8 @@ p { margin: 0; }
   .site-nav .btn { margin-top: 12px; }
 }
 
-/* blueprint grid used behind hero + finder */
-.hero, .finder, .page-head { background-color: var(--paper); background-image: linear-gradient(var(--grid) 1px, transparent 1px), linear-gradient(90deg, var(--grid) 1px, transparent 1px); background-size: 28px 28px; }
+/* Keep these sections on a plain background so product imagery stays clear. */
+.hero, .finder, .page-head { background-color: var(--paper); }
 
 /* hero */
 .hero { padding-block: clamp(40px, 7vw, 88px) clamp(32px, 5vw, 64px); overflow: hidden; }
@@ -274,6 +273,7 @@ p { margin: 0; }
 .sheet-main h2 { font-size: 1.9rem; margin-top: 8px; }
 .sheet-main p { max-width: 65ch; }
 .usage { font: 700 1.35rem/1.3 var(--f-display); padding: 16px 20px; border-left: 5px solid var(--red); background: var(--red-tint); border-radius: 0 8px 8px 0; }
+.usage-rates { margin: 0; padding-left: 1.25em; display: grid; gap: .35rem; font-weight: 600; }
 .table-wrap { overflow-x: auto; }
 .cov { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; }
 .cov th, .cov td { text-align: left; padding: 12px 14px; border-bottom: 1px solid var(--line); }

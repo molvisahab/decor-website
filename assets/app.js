@@ -187,16 +187,16 @@
       say: "For roofs and slabs, use <b>Seal 777</b> (two-part coating that takes high water pressure) or <b>WP 781</b> (flexible, transparent coating that moves with the slab). Seal the roof joints with <b>PU Sealant</b>. The white Seal 777 15 kg kit also helps with heat proofing." },
     { id: "bathroom", words: ["bathroom", "washroom", "bath", "toilet", "ghusal ?khana", "shower", "kitchen"], slugs: ["seal-777", "wp-781", "sbr-latex-775"],
       say: "For bathrooms, coat the floor and lower walls with <b>Seal 777</b> or <b>WP 781</b> before tiling. Use <b>SBR Latex 775</b> in the tile mortar and grout for a stronger, water-resistant finish." },
-    { id: "tank", words: ["tank", "tanki", "tankee", "reservoir", "pool", "swimming"], slugs: ["seal-777", "wp-781", "proof-700"],
-      say: "For an existing water tank, coat the inside with <b>Seal 777</b> or <b>WP 781</b>. For a new tank, mix <b>Proof 700</b> into the concrete (1 kg per 50 kg bag of cement)." },
-    { id: "basement", words: ["basement", "foundation", "bunyad", "buniyad", "underground", "dpc", "tehkhana"], slugs: ["proof-700", "seal-777", "wp-781"],
-      say: "For basements and foundations, mix <b>Proof 700</b> into the concrete while building, then coat walls with <b>Seal 777</b>. Seal 777 also works as a DPC (damp proof course)." },
+    { id: "tank", words: ["tank", "tanki", "tankee", "reservoir", "pool", "swimming"], slugs: ["seal-777", "wp-781", "proof-700", "sbr-latex-775"],
+      say: "For an existing water tank, coat the inside with <b>Seal 777</b> or <b>WP 781</b>. For a new tank, mix <b>Proof 700</b> into the concrete (1 kg per 50 kg bag of cement). <b>SBR Latex 775</b> is also listed for water tanks; ask our team for application guidance." },
+    { id: "basement", words: ["basement", "foundation", "bunyad", "buniyad", "underground", "dpc", "tehkhana"], slugs: ["proof-700", "seal-777", "wp-781", "sbr-latex-775", "termi-fix"],
+      say: "For basements and foundations, the listed products include <b>Proof 700</b>, <b>Seal 777</b>, <b>WP 781</b>, <b>SBR Latex 775</b> and <b>Termi Fix</b>. Ask our team which product and application method suit your project." },
     { id: "joints", words: ["crack", "cracks", "joint", "joints", "daraar", "darar", "gap", "expansion", "window", "sheet"], slugs: ["pu-sealant", "wp-781"],
       say: "For cracks and joints, fill them with <b>PU Sealant</b> (600 ml). It stays flexible when the building moves. For wide areas that move, coat with <b>WP 781</b>." },
-    { id: "tiles", words: ["tile", "tiles", "grout", "grouting", "marble", "bonding", "bond", "repair", "purana"], slugs: ["sbr-latex-775"],
-      say: "<b>SBR Latex 775</b> is our bonding agent. Use it to bond new concrete to old concrete, for tile fixing and grouting, and to make mortar stronger." },
-    { id: "walls", words: ["wall", "walls", "deewar", "diwar", "plaster", "palaster", "damp", "dampness", "seelan", "seelun", "silan", "nami", "seepage", "leak", "leaking", "leakage", "paani"], slugs: ["seal-777", "wp-781", "proof-700"],
-      say: "For damp walls and seepage, coat the wall with <b>Seal 777</b> or <b>WP 781</b>. When re-plastering, add <b>Proof 700</b> to the plaster mix (1 kg per 50 kg cement). Tell me where the water comes in (roof, bathroom, tank, basement) and I can be more exact." },
+    { id: "tiles", words: ["floor", "floors", "tile", "tiles", "grout", "grouting", "marble", "bonding", "bond", "repair", "purana"], slugs: ["seal-777"],
+      say: "For floor waterproofing, <b>Decor Seal 777</b> is listed under Floors. See its product page for the stated kit coverage." },
+    { id: "walls", words: ["wall", "walls", "deewar", "diwar", "plaster", "palaster", "damp", "dampness", "seelan", "seelun", "silan", "nami", "seepage", "leak", "leaking", "leakage", "paani"], slugs: ["seal-777", "wp-781"],
+      say: "For external walls, the listed products are <b>Seal 777</b> and <b>WP 781</b>. Tell me where the water comes in (roof, bathroom, tank, basement) and I can be more exact." },
     { id: "termite", words: ["termite", "termites", "deemak", "dimak", "demak", "keeray", "keeda", "wood", "lakri", "furniture"], slugs: ["termi-fix"],
       say: "Use <b>Termi Fix</b>. 1 litre mixes with 500 litres of water and treats about 1,050 sq ft of soil. It works before and after construction. For wooden frames and doors, use it with kerosene oil." },
   ];
@@ -234,7 +234,7 @@
     if (probs.length > 1) probs = probs.filter(function (p) { return p.id !== "walls"; }).concat(probs.filter(function (p) { return p.id === "walls"; })).slice(0, 1);
     if (named.length && wantsQty) {
       var p0 = bySlug[named[0]];
-      return { html: "<p><b>" + esc(p0.name) + "</b>: " + esc(p0.usage || "Follow the instructions on the pack. Our team can guide you on WhatsApp.") + "</p>" + cards([p0.slug]) + (p0.usage ? "<p>The product page has a calculator to work out how much you need.</p>" : "") };
+      return { html: "<p><b>" + esc(p0.name) + "</b>: " + esc(p0.usage || "Follow the instructions on the pack. Our team can guide you on WhatsApp.") + "</p>" + cards([p0.slug]) + (p0.usage ? "<p>The product page has the full usage details.</p>" : "") };
     }
     if (probs.length) {
       var pr = probs[0]; lastTopic = pr.id;
