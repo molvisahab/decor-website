@@ -78,11 +78,11 @@
   $$(".product-view").forEach(function (v) {
     var name = v.dataset.name, link = $(".order-link", v), qty = $(".qty input", v);
     function update() {
-      var pack = ($("input[type=radio]:checked", v) || {}).value || "";
+      var pack = ($(".order-box input[type=radio]:checked", v) || {}).value || "";
       var q = Math.max(1, Math.min(9999, parseInt(qty.value, 10) || 1));
       link.href = wa("Assalam o Alaikum, I want to order " + name + " – " + pack + " × " + q + ".");
     }
-    $$("input[type=radio]", v).forEach(function (r) { r.addEventListener("change", update); });
+    $$(".order-box input[type=radio]", v).forEach(function (r) { r.addEventListener("change", update); });
     qty.addEventListener("input", update);
     qty.addEventListener("blur", function () { qty.value = Math.max(1, Math.min(9999, parseInt(qty.value, 10) || 1)); update(); });
     $$(".qty button", v).forEach(function (b) {
@@ -92,17 +92,40 @@
 
     var calc = $(".calc", v);
     if (calc) {
-      var input = $("input", calc), out = $("output", calc), type = calc.dataset.calc;
+      var input = $(".calc-row input", calc), out = $("output", calc), type = calc.dataset.calc;
       var fmt = function (n) { return n.toLocaleString("en-PK"); };
+      var BAG_LABELS = { cement: "Bags of cement (50 kg)", bond: "Bags of tile bond (20 kg)", grout: "Bags of tile grout (1 kg each)" };
       function run() {
         var x = parseFloat(input.value);
         if (!(x > 0)) { out.textContent = "Enter a number above 0"; return; }
         if (type === "cement") {
           var kg = Math.ceil(x);
           out.textContent = "You need " + fmt(kg) + " kg of Proof 700 (" + fmt(kg) + " × 1 kg packs)";
+        } else if (type === "seal") {
+          // 15 kg carton = 160 sq ft, 3 kg kit = 35 sq ft. Cartons first, kits for what is left.
+          var c = Math.floor(x / 160), rem = x - c * 160, k = rem > 0 ? Math.ceil(rem / 35) : 0;
+          if (k * 3 >= 15) { c += 1; k = 0; }
+          var parts = [];
+          if (c) parts.push(fmt(c) + " × 15 kg carton");
+          if (k) parts.push(fmt(k) + " × 3 kg kit");
+          out.textContent = "Buy: " + parts.join(" + ") + " (covers " + fmt(c * 160 + k * 35) + " sq ft)";
+        } else if (type === "sbr") {
+          // 1 litre per 50 kg cement bag, per 20 kg tile bond bag, or per 5 bags of 1 kg tile grout
+          var use = ($("input[name=sbr-use]:checked", calc) || {}).value || "cement";
+          var litres = use === "grout" ? x / 5 : x;
+          var need = Math.ceil(litres - 1e-9);
+          var n25 = Math.floor(need / 25), r = need - n25 * 25, n5 = Math.floor(r / 5), n1 = r - n5 * 5;
+          if (n1 >= 4) { n5 += 1; n1 = 0; }
+          if (n5 >= 5) { n25 += Math.floor(n5 / 5); n5 = n5 % 5; }
+          var buy = [];
+          if (n25) buy.push(n25 + " × 25 litre");
+          if (n5) buy.push(n5 + " × 5 litre");
+          if (n1) buy.push(n1 + " × 1 litre");
+          var shown = litres % 1 === 0 ? fmt(litres) : (Math.round(litres * 10) / 10).toLocaleString("en-PK");
+          out.textContent = "You need " + shown + (litres === 1 ? " litre" : " litres") + " of SBR Latex 775. Buy: " + buy.join(" + ");
         } else {
           var ml = x / 1050 * 1000, water = ml / 2; // 1 L : 500 L water : 1,050 sq ft
-          var need = Math.ceil(ml / 250) * 250, L = Math.floor(need / 1000), rest = need - L * 1000;
+          var need2 = Math.ceil(ml / 250) * 250, L = Math.floor(need2 / 1000), rest = need2 - L * 1000;
           var packs = [];
           if (L) packs.push(L + " × 1 litre");
           if (rest === 750) { packs.push("1 × 500 ml", "1 × 250 ml"); }
@@ -111,7 +134,11 @@
           out.textContent = "About " + fmt(Math.round(ml)) + " ml Termi Fix in " + fmt(Math.round(water)) + " L water. Buy: " + packs.join(" + ");
         }
       }
-      input.addEventListener("input", run); run();
+      input.addEventListener("input", run);
+      $$("input[name=sbr-use]", calc).forEach(function (r) {
+        r.addEventListener("change", function () { var l = $(".calc-bags", calc); if (l) l.textContent = BAG_LABELS[r.value]; run(); });
+      });
+      run();
     }
   });
 
@@ -184,19 +211,23 @@
   var has = function (t, words) { return words.some(function (w) { return new RegExp("(^|[^a-z0-9])" + w + "([^a-z0-9]|$)").test(t); }); };
   var PROBLEMS = [
     { id: "roof", words: ["roof", "chat", "chhat", "chath", "terrace", "balcony", "slab", "chhaat"], slugs: ["seal-777", "wp-781", "pu-sealant"],
-      say: "For roofs and slabs, use <b>Seal 777</b> (two-part coating that takes high water pressure) or <b>WP 781</b> (flexible, transparent coating that moves with the slab). Seal the roof joints with <b>PU Sealant</b>. The white Seal 777 15 kg kit also helps with heat proofing." },
+      say: "For roofs and slabs, use <b>Seal 777</b> (two-part coating that takes high water pressure) or <b>WP 781</b> (flexible, transparent coating that moves with the slab). Seal the roof joints with <b>PU Sealant</b>. The white Seal 777 15 kg carton also helps with heat proofing." },
     { id: "bathroom", words: ["bathroom", "washroom", "bath", "toilet", "ghusal ?khana", "shower", "kitchen"], slugs: ["seal-777", "wp-781", "sbr-latex-775"],
       say: "For bathrooms, coat the floor and lower walls with <b>Seal 777</b> or <b>WP 781</b> before tiling. Use <b>SBR Latex 775</b> in the tile mortar and grout for a stronger, water-resistant finish." },
-    { id: "tank", words: ["tank", "tanki", "tankee", "reservoir", "pool", "swimming"], slugs: ["seal-777", "wp-781", "proof-700"],
-      say: "For an existing water tank, coat the inside with <b>Seal 777</b> or <b>WP 781</b>. For a new tank, mix <b>Proof 700</b> into the concrete (1 kg per 50 kg bag of cement)." },
-    { id: "basement", words: ["basement", "foundation", "bunyad", "buniyad", "underground", "dpc", "tehkhana"], slugs: ["proof-700", "seal-777", "wp-781"],
-      say: "For basements and foundations, mix <b>Proof 700</b> into the concrete while building, then coat walls with <b>Seal 777</b>. Seal 777 also works as a DPC (damp proof course)." },
+    { id: "tank", words: ["tank", "tanki", "tankee", "reservoir", "pool", "swimming"], slugs: ["seal-777", "wp-781", "proof-700", "sbr-latex-775"],
+      say: "For an existing water tank, coat the inside with <b>Seal 777</b> or <b>WP 781</b>. For a new tank, mix <b>Proof 700</b> into the concrete (1 kg per 50 kg bag of cement). Add <b>SBR Latex 775</b> to the cement mortar for a stronger, water-resistant finish." },
+    { id: "basement", words: ["basement", "foundation", "bunyad", "buniyad", "underground", "dpc", "tehkhana"], slugs: ["proof-700", "seal-777", "wp-781", "sbr-latex-775", "termi-fix"],
+      say: "For basements and foundations, mix <b>Proof 700</b> into the concrete while building, then coat the walls with <b>Seal 777</b> or <b>WP 781</b>. Seal 777 also works as a DPC (damp proof course). Use <b>SBR Latex 775</b> to bond new concrete to old, and treat the soil with <b>Termi Fix</b> against termites." },
     { id: "joints", words: ["crack", "cracks", "joint", "joints", "daraar", "darar", "gap", "expansion", "window", "sheet"], slugs: ["pu-sealant", "wp-781"],
       say: "For cracks and joints, fill them with <b>PU Sealant</b> (600 ml). It stays flexible when the building moves. For wide areas that move, coat with <b>WP 781</b>." },
     { id: "tiles", words: ["tile", "tiles", "grout", "grouting", "marble", "bonding", "bond", "repair", "purana"], slugs: ["sbr-latex-775"],
-      say: "<b>SBR Latex 775</b> is our bonding agent. Use it to bond new concrete to old concrete, for tile fixing and grouting, and to make mortar stronger." },
-    { id: "walls", words: ["wall", "walls", "deewar", "diwar", "plaster", "palaster", "damp", "dampness", "seelan", "seelun", "silan", "nami", "seepage", "leak", "leaking", "leakage", "paani"], slugs: ["seal-777", "wp-781", "proof-700"],
-      say: "For damp walls and seepage, coat the wall with <b>Seal 777</b> or <b>WP 781</b>. When re-plastering, add <b>Proof 700</b> to the plaster mix (1 kg per 50 kg cement). Tell me where the water comes in (roof, bathroom, tank, basement) and I can be more exact." },
+      say: "<b>SBR Latex 775</b> is our bonding agent. Use it to bond new concrete to old concrete, for tile fixing and grouting, and to make mortar stronger. Mix 1 litre per 20 kg bag of tile bond, or per 5 bags (1 kg each) of tile grout." },
+    { id: "floors", words: ["floor", "floors", "farsh", "flooring"], slugs: ["seal-777"],
+      say: "For damp floors and water seeping through floor slabs, use <b>Seal 777</b>. One 15 kg carton covers 160 sq ft and one 3 kg kit covers 35 sq ft." },
+    { id: "plaster", words: ["plaster", "palaster", "mortar", "cement"], slugs: ["proof-700", "sbr-latex-775"],
+      say: "For plaster and mortar, mix <b>Proof 700</b> into the cement for waterproofing (1 kg per 50 kg bag). <b>SBR Latex 775</b> makes the mortar stronger and improves bonding (1 litre per 50 kg bag of cement)." },
+    { id: "walls", words: ["wall", "walls", "deewar", "diwar", "damp", "dampness", "seelan", "seelun", "silan", "nami", "seepage", "leak", "leaking", "leakage", "paani"], slugs: ["seal-777", "wp-781"],
+      say: "For damp walls and seepage, coat the wall with <b>Seal 777</b> or <b>WP 781</b>. Tell me where the water comes in (roof, bathroom, tank, basement) and I can be more exact." },
     { id: "termite", words: ["termite", "termites", "deemak", "dimak", "demak", "keeray", "keeda", "wood", "lakri", "furniture"], slugs: ["termi-fix"],
       say: "Use <b>Termi Fix</b>. 1 litre mixes with 500 litres of water and treats about 1,050 sq ft of soil. It works before and after construction. For wooden frames and doors, use it with kerosene oil." },
   ];
@@ -223,7 +254,7 @@
       return { html: "<p>You can order directly from us on WhatsApp. Send us your city and our team will tell you the quickest way to get the products to you.</p>" + waBtn("Assalam o Alaikum, I am in (your city). Where can I get Decor products?", "Ask on WhatsApp") };
     }
     if (wantsOrder) {
-      return { html: "<p>Orders are taken on WhatsApp. Send the product, pack size and quantity, and our team will confirm the rate and delivery.</p>" + (named.length ? cards(named) : "") + waBtn("Assalam o Alaikum, I want to order " + (topic || "Decor products") + ".", "Order on WhatsApp") };
+      return { html: "<p>Orders are taken on WhatsApp. Send the product, pack size and quantity, and our team will confirm the rate and delivery.</p>" + (named.length ? cards(named) : "") + waBtn("Assalam o Alaikum, I want to order " + (topic || "Decor products") + ".", "WhatsApp") };
     }
     if (wantsContact) {
       return { html: "<p>WhatsApp / phone: <b>" + esc(C.phoneDisplay) + "</b><br>Email: <b>" + esc(C.email) + "</b><br>Instagram: " + esc(C.instagramHandle) + "<br>Facebook: " + esc(C.facebookHandle) + "</p>" + waBtn("Assalam o Alaikum, I have a question.", "Message us on WhatsApp") };
@@ -246,7 +277,7 @@
       return { html: list + cards(named.slice(0, 3)), quick: ["Price & order", "How much do I need?", "All products"] };
     }
     if (wantsQty) {
-      return { html: "<p><b>Proof 700</b>: 1 kg for every 50 kg bag of cement.</p><p><b>Termi Fix</b>: 1 litre in 500 litres of water treats about 1,050 sq ft.</p><p>Both product pages have a quantity calculator. For other products, our team will advise on WhatsApp.</p>" + cards(["proof-700", "termi-fix"]) };
+      return { html: "<p><b>Proof 700</b>: 1 kg for every 50 kg bag of cement.</p><p><b>SBR Latex 775</b>: 1 litre per 50 kg bag of cement, per 20 kg bag of tile bond, or per 5 bags (1 kg each) of tile grout.</p><p><b>Seal 777</b>: a 15 kg carton covers 160 sq ft and a 3 kg kit covers 35 sq ft.</p><p><b>Termi Fix</b>: 1 litre in 500 litres of water treats about 1,050 sq ft.</p><p>These four product pages have a quantity calculator. For other products, our team will advise on WhatsApp.</p>" + cards(["proof-700", "sbr-latex-775", "seal-777", "termi-fix"]) };
     }
     if (wantsList) {
       return { html: "<p>We make six products:</p>" + cards((D.products || []).map(function (p) { return p.slug; })) };
